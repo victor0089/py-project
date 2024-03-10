@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Product</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>Create Product</h1>
+    <form method="post" action="{{ url_for('create_product') }}">
+        <label for="name">Product Name:</label><br>
+        <input type="text" id="name" name="name" required><br>
+        <label for="price">Price:</label><br>
+        <input type="number" id="price" name="price" step="0.01" required><br><br>
+        <input type="submit" value="Create Product">
+    </form>
+</body>
+</html>

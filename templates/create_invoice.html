@@ -1,23 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Invoice</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    <h1>Create Invoice</h1>
-    <form method="post" action="{{ url_for('create_invoice') }}">
-        <label for="product_id">Select Product:</label><br>
-        <select id="product_id" name="product_id" required>
+{% extends "base.html" %}
+{% block content %}
+<h2>Create Invoice</h2>
+<form method="post">
+    <div class="form-group">
+        <label for="product_id">Product:</label>
+        <select class="form-control" id="product_id" name="product_id">
             {% for product in products %}
-            <option value="{{ product[0] }}">{{ product[1] }}</option>
+            <option value="{{ product.id }}">{{ product.name }}</option>
             {% endfor %}
-        </select><br>
-        <label for="quantity">Quantity:</label><br>
-        <input type="number" id="quantity" name="quantity" required><br><br>
-        <input type="submit" value="Create Invoice">
-    </form>
-</body>
-</html>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="quantity">Quantity:</label>
+        <input type="text" class="form-control" id="quantity" name="quantity">
+    </div>
+    <div class="form-group">
+        <label for="type">Invoice Type:</label>
+        <select class="form-control" id="type" name="type">
+            <option value="cash">Cash</option>
+            <option value="credit">Credit</option>
+            <option value="partial">Partial</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}

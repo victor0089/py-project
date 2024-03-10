@@ -1,19 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Product</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
     <h1>Create Product</h1>
-    <form method="post" action="{{ url_for('create_product') }}">
-        <label for="name">Product Name:</label><br>
-        <input type="text" id="name" name="name" required><br>
-        <label for="price">Price:</label><br>
-        <input type="number" id="price" name="price" step="0.01" required><br><br>
-        <input type="submit" value="Create Product">
+
+	<form method="POST" action="{{ url_for('create_product') }}" enctype="multipart/form-data">
+
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="price">Price:</label>
+                <input type="number" class="form-control" id="price" name="price" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <select class="form-control" id="category" name="category" required>
+                    <option value="">Select Category</option>
+                    {% for category in categories %}
+                    <option value="{{ category[0] }}">{{ category[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="barcode">Barcode:</label>
+                <input type="text" class="form-control" id="barcode" name="barcode">
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <input type="text" class="form-control" id="description" name="description">
+            </div>
+            <div class="form-group">
+                <label for="vendor">Vendor:</label>
+                <input type="text" class="form-control" id="vendor" name="vendor">
+            </div>
+            <div class="form-group">
+                <label for="manufacturer">Manufacturer:</label>
+                <input type="text" class="form-control" id="manufacturer" name="manufacturer">
+            </div>
+            <div class="form-group">
+                <label for="discount">Discount:</label>
+                <input type="number" class="form-control" id="discount" name="discount" step="0.01">
+            </div>
+            <div class="form-group">
+                <label for="tax">Tax:</label>
+                <input type="number" class="form-control" id="tax" name="tax" step="0.01">
+            </div>
+            <div class="form-group">
+                <label for="image">Image:</label>
+                <input type="file" class="form-control-file" id="image" name="image">
+            </div>
+			<button type="submit" class="btn btn-primary">Save Changes</button>
     </form>
-</body>
-</html>
+{% endblock %}
+

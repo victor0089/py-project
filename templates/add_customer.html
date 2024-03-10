@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Add New Customer</h1>
+    <form action="/add_customer" method="POST">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="segment">Segment:</label>
+        <input type="text" id="segment" name="segment" required><br><br>
+
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location" required><br><br>
+
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender" required>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+        </select><br><br>
+
+        <label for="contact_person">Contact Person:</label>
+        <input type="text" id="contact_person" name="contact_person" required><br><br>
+
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}

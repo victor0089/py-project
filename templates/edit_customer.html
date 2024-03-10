@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Edit Customer{% endblock %}
+
+{% block content %}
+<h1>Edit Customer</h1>
+<form method="post" action="{{ url_for('update_customer', id=customer.id) }}">
+    <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <input type="text" class="form-control" id="name" name="name" value="{{ customer.name }}">
+    </div>
+    <div class="mb-3">
+        <label for="segment" class="form-label">Segment</label>
+        <input type="text" class="form-control" id="segment" name="segment" value="{{ customer.segment }}">
+    </div>
+    <div class="mb-3">
+        <label for="location" class="form-label">Location</label>
+        <input type="text" class="form-control" id="location" name="location" value="{{ customer.location }}">
+    </div>
+    <div class="mb-3">
+        <label for="gender" class="form-label">Gender</label>
+        <select class="form-select" id="gender" name="gender">
+            <option value="Male" {% if customer.gender == 'Male' %}selected{% endif %}>Male</option>
+            <option value="Female" {% if customer.gender == 'Female' %}selected{% endif %}>Female</option>
+            <option value="Other" {% if customer.gender == 'Other' %}selected{% endif %}>Other</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="contact_person" class="form-label">Contact Person</label>
+        <input type="text" class="form-control" id="contact_person" name="contact_person" value="{{ customer.contact_person }}">
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>
+{% endblock %}
