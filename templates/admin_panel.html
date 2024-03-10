@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+	    <script>
+        $(document).ready(function() {
+            // Ajax call to fetch sales data
+            $.ajax({
+                url: "{{ url_for('get_sales') }}",
+                type: "GET",
+                success: function(response) {
+                    $('#sales').html(response);
+                }
+            });
+
+            // Ajax call to fetch payment data
+            $.ajax({
+                url: "{{ url_for('get_payments') }}",
+                type: "GET",
+                success: function(response) {
+                    $('#payments').html(response);
+                }
+            });
+
+            // Ajax call to fetch online users
+            $.ajax({
+                url: "{{ url_for('get_online_users') }}",
+                type: "GET",
+                success: function(response) {
+                    $('#online-users').html(response);
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Admin Panel, {{ username }}!</h1>
+        <p>Your role: {{ role }}</p>
+        <a href="{{ url_for('logout') }}" class="button">Logout</a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // jQuery code can go here
+    </script>
+	   <h2>Sales</h2>
+    <div id="sales"></div>
+
+    <h2>Payments</h2>
+    <div id="payments"></div>
+
+    <h2>Online Users</h2>
+    <div id="online-users"></div>
+	    <ul>
+        <li><a href="{{ url_for('create_product') }}">Create Product</a></li>
+        <li><a href="{{ url_for('create_invoice') }}">Create Invoice</a></li>
+        <li><a href="{{ url_for('create_payment') }}">Create Payment</a></li>
+        <li><a href="{{ url_for('sales_and_payments') }}">List Sales and Payments</a></li>
+    </ul>
+</body>
+</html>
