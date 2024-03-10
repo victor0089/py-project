@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2>Export Reports to Excel</h2>
+        <p>Click the button below to export all reports data to Excel format.</p>
+        <form method="GET" action="{{ url_for('export_excel') }}">
+            <button type="submit" class="btn btn-primary">Export to Excel</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

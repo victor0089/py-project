@@ -3,25 +3,67 @@
 <h2>Create Invoice</h2>
 <form method="post">
     <div class="form-group">
-        <label for="product_id">Product:</label>
-        <select class="form-control" id="product_id" name="product_id">
-            {% for product in products %}
-            <option value="{{ product.id }}">{{ product.name }}</option>
+        <label for="customer_id">Customer:</label>
+        <select class="form-control" id="customer_id" name="customer_id">
+            {% for customer in customers %}
+            <option value="{{ customer[0] }}">{{ customer[1] }}</option>
             {% endfor %}
         </select>
     </div>
     <div class="form-group">
-        <label for="quantity">Quantity:</label>
-        <input type="text" class="form-control" id="quantity" name="quantity">
+        <label for="items">Items:</label>
+        <table class="table table-bordered" id="items">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Discount (%)</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <select class="form-control" name="product_id[]">
+                            {% for product in products %}
+                            <option value="{{ product[0] }}">{{ product[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td><input type="number" class="form-control" name="quantity[]"></td>
+                    <td><input type="number" class="form-control" name="price[]"></td>
+                    <td><input type="number" class="form-control" name="discount[]"></td>
+                    <td><input type="number" class="form-control" name="total[]" readonly></td>
+                </tr>
+            </tbody>
+        </table>
+        <button type="button" class="btn btn-primary" id="add-item">Add Item</button>
     </div>
     <div class="form-group">
-        <label for="type">Invoice Type:</label>
-        <select class="form-control" id="type" name="type">
-            <option value="cash">Cash</option>
-            <option value="credit">Credit</option>
-            <option value="partial">Partial</option>
-        </select>
+        <label for="notes">Notes:</label>
+        <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+<script>
+    // Add item row dynamically
+    document.getElementById("add-item").addEventListener("click", function() {
+        var newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td>
+                <select class="form-control" name="product_id[]">
+                    {% for product in products %}
+                    <option value="{{ product[0] }}">{{ product[1] }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td><input type="number" class="form-control" name="quantity[]"></td>
+            <td><input type="number" class="form-control" name="price[]"></td>
+            <td><input type="number" class="form-control" name="discount[]"></td>
+            <td><input type="number" class="form-control" name="total[]" readonly></td>
+        `;
+        document.getElementById("items").getElementsByTagName('tbody')[0].appendChild(newRow);
+    });
+</script>
 {% endblock %}

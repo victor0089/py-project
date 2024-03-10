@@ -246,28 +246,42 @@ def invoices():
     else:
         return redirect(url_for('login'))
 # Route for creating sales invoices
+# Route for creating invoices
 @app.route('/create_invoice', methods=['GET', 'POST'])
 def create_invoice():
     if is_logged_in():
         if request.method == 'POST':
-            product_id = request.form['product_id']
-            quantity = request.form['quantity']
-            date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            invoice_type = request.form['type']  # Assuming a form field named 'type' to select invoice type
+            # Fetch data from the form
+            customer_id = request.form['customer_id']
+            product_ids = request.form.getlist('product_id[]')
+            quantities = request.form.getlist('quantity[]')
+            prices = request.form.getlist('price[]')
+            discounts = request.form.getlist('discount[]')
+            totals = request.form.getlist('total[]')
+            notes = request.form['notes']
+            
+            # Insert the invoice data into the database
             conn = sqlite3.connect('database.db')
-            c = conn.cursor()
-            c.execute("INSERT INTO invoices (product_id, quantity, date, type) VALUES (?, ?, ?, ?)",
-                      (product_id, quantity, date, invoice_type))
+            for i in range(len(product_ids)):
+                conn.execute("""
+                    INSERT INTO invoices (customer_id, product_id, quantity, price, discount, total, notes, date)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
+                """, (customer_id, product_ids[i], quantities[i], prices[i], discounts[i], totals[i], notes))
             conn.commit()
             conn.close()
+            
+            # Redirect to the home page after creating the invoice
             return redirect(url_for('home'))
-        
-        conn = sqlite3.connect('database.db')
-        c = conn.cursor()
-        c.execute("SELECT * FROM products")
-        products = c.fetchall()
-        conn.close()
-        return render_template('create_invoice.html', products=products, is_logged_in=is_logged_in())
+        else:
+            # If GET request, render the create invoice form
+            conn = sqlite3.connect('database.db')
+            c = conn.cursor()
+            c.execute("SELECT * FROM customers")
+            customers = c.fetchall()
+            c.execute("SELECT * FROM products")
+            products = c.fetchall()
+            conn.close()
+            return render_template('create_invoice.html', customers=customers, products=products, is_logged_in=is_logged_in())
     else:
         return redirect(url_for('login'))
 # Route for listing all customers
@@ -400,7 +414,27 @@ def get_payments():
         payments_html += f'<li>{payment}</li>'
     payments_html += '</ul>'
     return payments_html
+from flask import send_file
+import pandas as pd
 
+@app.route('/export_excel')
+def export_excel():
+    # Query the database to retrieve reports data
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM reports")
+    reports_data = c.fetchall()
+    conn.close()
+
+    # Convert data to DataFrame (using Pandas)
+    df = pd.DataFrame(reports_data, columns=['Column1', 'Column2', ...])  # Replace Column1, Column2, ... with actual column names
+
+    # Create Excel file from DataFrame
+    excel_file_path = 'reports.xlsx'
+    df.to_excel(excel_file_path, index=False)
+
+    # Serve the Excel file for download
+    return send_file(excel_file_path, as_attachment=True)
 # Route to fetch online users
 @app.route('/get_online_users')
 def get_online_users():
