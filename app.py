@@ -1,8 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
 import os
+import pandas as pd
 from werkzeug.utils import secure_filename
 from datetime import datetime
+from flask import flash
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Change this to a secure secret key
@@ -24,6 +27,15 @@ c.execute('''CREATE TABLE IF NOT EXISTS customers
 (id INTEGER PRIMARY KEY, name TEXT NOT NULL, email TEXT, phone TEXT, segment TEXT, location TEXT, gender TEXT, contact_person TEXT)''')
 c.execute('''CREATE TABLE IF NOT EXISTS invoices 
 (id INTEGER PRIMARY KEY, customer_id INTEGER, product_id INTEGER, quantity INTEGER, date TEXT, type TEXT, FOREIGN KEY (customer_id) REFERENCES customers (id), FOREIGN KEY (product_id) REFERENCES products (id))''')
+
+
+# Create transaction_categories table
+c.execute('''CREATE TABLE IF NOT EXISTS transaction_categories (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL
+            )''')
+
+# Commit changes and close connection
 conn.commit()
 conn.close()
 
@@ -62,7 +74,120 @@ def sales_and_payments():
         return render_template('sales_and_payments.html', data=sales_and_payments, is_logged_in=is_logged_in)
     else:
         return redirect(url_for('login'))
+# Route for importing sales from Excel file
+@app.route('/import_sales', methods=['GET', 'POST'])
+def import_sales():
+    if is_logged_in():
+        if request.method == 'POST':
+            # Check if the post request has the file part
+            if 'file' not in request.files:
+                return redirect(request.url)
+            file = request.files['file']
+            # If the user does not select a file, the browser submits an empty file without a filename
+            if file.filename == '':
+                return redirect(request.url)
+            if file:
+                filename = secure_filename(file.filename)
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(file_path)
+                
+                # Parse Excel file
+                try:
+                    sales_data = pd.read_excel(file_path)
+                    # Insert data into the database
+                    conn = sqlite3.connect('database.db')
+                    c = conn.cursor()
+                    for index, row in sales_data.iterrows():
+                        c.execute("""
+                            INSERT INTO sales (product_id, quantity, date)
+                            VALUES (?, ?, ?)
+                        """, (row['product_id'], row['quantity'], row['date']))
+                    conn.commit()
+                    conn.close()
+                    return redirect(url_for('sales_and_payments'))
+                except Exception as e:
+                    # Handle parsing or database insertion errors
+                    os.remove(file_path)  # Delete uploaded file
+                    return render_template('import_sales.html', error=str(e))
         
+        return render_template('import_sales.html', is_logged_in=is_logged_in())
+    else:
+        return redirect(url_for('login'))
+ # Route for importing products from Excel file
+@app.route('/import_products', methods=['GET', 'POST'])
+def import_products():
+    if is_logged_in():
+        if request.method == 'POST':
+            if 'file' not in request.files:
+                return redirect(request.url)
+            file = request.files['file']
+            if file.filename == '':
+                return redirect(request.url)
+            if file:
+                filename = secure_filename(file.filename)
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(file_path)
+                
+                try:
+                    products_data = pd.read_excel(file_path)
+                    conn = sqlite3.connect('database.db')
+                    c = conn.cursor()
+                    for index, row in products_data.iterrows():
+                        c.execute("""
+                            INSERT INTO products (name, category, barcode, description, vendor, manufacturer, price, discount, tax, image_url)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """, (row['name'], row['category'], row['barcode'], row['description'], row['vendor'], row['manufacturer'], row['price'], row['discount'], row['tax'], row['image_url']))
+                    conn.commit()
+                    conn.close()
+                    # If successful, flash a success message
+                    flash('Products imported successfully!', 'success')
+                    return redirect(url_for('products'))
+                except Exception as e:
+                    os.remove(file_path)
+                    return render_template('import_products.html', error=str(e))
+        
+        return render_template('import_products.html', is_logged_in=is_logged_in())
+    else:
+        return redirect(url_for('login'))
+
+# Route for importing customers from Excel file
+@app.route('/import_customers', methods=['GET', 'POST'])
+def import_customers():
+    if is_logged_in():
+        if request.method == 'POST':
+            if 'file' not in request.files:
+                return redirect(request.url)
+            file = request.files['file']
+            if file.filename == '':
+                return redirect(request.url)
+            if file:
+                filename = secure_filename(file.filename)
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(file_path)
+                
+                try:
+                    customers_data = pd.read_excel(file_path)
+                    conn = sqlite3.connect('database.db')
+                    c = conn.cursor()
+                    for index, row in customers_data.iterrows():
+                        c.execute("""
+                            INSERT INTO customers (name, email, phone, segment, location, gender, contact_person)
+                            VALUES (?, ?, ?, ?, ?, ?, ?)
+                        """, (row['name'], row['email'], row['phone'], row['segment'], row['location'], row['gender'], row['contact_person']))
+                    conn.commit()
+                    conn.close()
+                    flash('Customers imported successfully!', 'success')
+                    return redirect(url_for('customers'))
+                except Exception as e:
+                    os.remove(file_path)
+                    return render_template('import_customers.html', error=str(e))
+        
+        return render_template('import_customers.html', is_logged_in=is_logged_in())
+    else:
+        return redirect(url_for('login'))
+
+# HTML templates for import_products.html and import_customers.html are similar to import_sales.html
+
 # Route for listing all products
 @app.route('/products')
 def products():
@@ -497,7 +622,6 @@ def get_online_users():
         online_users_html += f'<li>{user}</li>'
     online_users_html += '</ul>'
     return online_users_html
-
 
 # Route for the registration form
 @app.route('/register', methods=['GET', 'POST'])

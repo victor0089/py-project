@@ -1,0 +1,41 @@
+
+@app.route('/manage_categories')
+def manage_categories():
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM transaction_categories")
+    categories = c.fetchall()
+    conn.close()
+    return render_template('manage_categories.html', categories=categories)
+
+@app.route('/create_category', methods=['POST'])
+def create_category():
+    if request.method == 'POST':
+        name = request.form['name']
+        conn = sqlite3.connect('database.db')
+        c = conn.cursor()
+        c.execute("INSERT INTO transaction_categories (name) VALUES (?)", (name,))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('manage_categories'))
+@app.route('/create_transaction', methods=['POST'])
+def create_transaction():
+    if request.method == 'POST':
+        # Get form data including selected category
+        category_id = request.form['category']
+        # Other transaction data
+        # Insert transaction into database with associated category
+        conn = sqlite3.connect('database.db')
+        c = conn.cursor()
+        c.execute("INSERT INTO transactions (category_id, ...) VALUES (?, ...)", (category_id, ...))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('transactions'))
+
+# Create transaction_categories table
+c.execute('''CREATE TABLE IF NOT EXISTS transaction_categories (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL
+            )''')
+
+# Commit changes and close connection

@@ -1,0 +1,14 @@
+   {% extends "base.html" %}
+
+   {% block content %}
+	
+	    <h1>Import Sales</h1>
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+    <form action="{{ url_for('import_sales') }}" method="post" enctype="multipart/form-data">
+        <label for="file">Choose Excel file:</label><br>
+        <input type="file" id="file" name="file"><br><br>
+        <input type="submit" value="Upload">
+    </form>
+	{% endblock %}

@@ -1,0 +1,109 @@
+-- Table: Users
+CREATE TABLE Users (
+    UserID INT PRIMARY KEY,
+    Username VARCHAR(50) UNIQUE NOT NULL,
+    Password VARCHAR(100) NOT NULL,
+    FullName VARCHAR(100) NOT NULL,
+    Email VARCHAR(100)
+);
+
+-- Table: Customers
+CREATE TABLE Customers (
+    CustomerID INT PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    ContactPerson VARCHAR(100),
+    Email VARCHAR(100),
+    Phone VARCHAR(20),
+    Address VARCHAR(255)
+);
+
+-- Table: Suppliers
+CREATE TABLE Suppliers (
+    SupplierID INT PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    ContactPerson VARCHAR(100),
+    Email VARCHAR(100),
+    Phone VARCHAR(20),
+    Address VARCHAR(255)
+);
+
+-- Table: Products
+CREATE TABLE Products (
+    ProductID INT PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    Description TEXT,
+    UnitPrice DECIMAL(10, 2) NOT NULL
+);
+
+-- Table: Invoices
+CREATE TABLE Invoices (
+    InvoiceID INT PRIMARY KEY,
+    CustomerID INT REFERENCES Customers(CustomerID),
+    InvoiceDate DATE NOT NULL,
+    TotalAmount DECIMAL(10, 2) NOT NULL
+);
+
+-- Table: InvoiceItems
+CREATE TABLE InvoiceItems (
+    InvoiceItemID INT PRIMARY KEY,
+    InvoiceID INT REFERENCES Invoices(InvoiceID),
+    ProductID INT REFERENCES Products(ProductID),
+    Quantity INT NOT NULL,
+    UnitPrice DECIMAL(10, 2) NOT NULL,
+    TotalPrice DECIMAL(10, 2) NOT NULL
+);
+
+-- Table: Payments
+CREATE TABLE Payments (
+    PaymentID INT PRIMARY KEY,
+    CustomerID INT REFERENCES Customers(CustomerID),
+    Amount DECIMAL(10, 2) NOT NULL,
+    PaymentDate DATE NOT NULL
+);
+
+-- Table: Expenses
+CREATE TABLE Expenses (
+    ExpenseID INT PRIMARY KEY,
+    SupplierID INT REFERENCES Suppliers(SupplierID),
+    Description TEXT,
+    Amount DECIMAL(10, 2) NOT NULL,
+    ExpenseDate DATE NOT NULL
+);
+-- Table: Inventory
+CREATE TABLE Inventory (
+    InventoryID INT PRIMARY KEY,
+    ProductID INT REFERENCES Products(ProductID),
+    Quantity INT NOT NULL,
+    CostPrice DECIMAL(10, 2) NOT NULL,
+    SalePrice DECIMAL(10, 2) NOT NULL,
+    LastUpdated DATE NOT NULL
+);
+
+-- Table: SalesReport
+CREATE TABLE SalesReport (
+    ReportID INT PRIMARY KEY,
+    ProductID INT REFERENCES Products(ProductID),
+    QuantitySold INT NOT NULL,
+    TotalSales DECIMAL(10, 2) NOT NULL,
+    ReportDate DATE NOT NULL
+);
+
+-- Create a partition function
+CREATE PARTITION FUNCTION CustomerPartitionFunction (INT) AS RANGE LEFT FOR VALUES ();
+
+-- Create a partition scheme
+CREATE PARTITION SCHEME CustomerPartitionScheme AS PARTITION CustomerPartitionFunction TO ([PRIMARY]);
+
+-- Create the segmented table
+CREATE TABLE CustomerSegments (
+    CustomerID INT,
+    SegmentName NVARCHAR(100),
+    CONSTRAINT PK_CustomerSegments PRIMARY KEY CLUSTERED (CustomerID)
+) ON CustomerPartitionScheme (CustomerID);
+
+-- Add partitions for each customer
+ALTER TABLE CustomerSegments
+    SPLIT RANGE (1);
+ALTER TABLE CustomerSegments
+    SPLIT RANGE (2);
+-- Continue splitting ranges for each customer as needed

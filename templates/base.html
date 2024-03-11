@@ -33,6 +33,7 @@
         <div class="dropdown-menu" aria-labelledby="navbarDropdownProducts">
           <a class="dropdown-item" href="{{ url_for('create_product') }}">Create Product</a>
           <a class="dropdown-item" href="{{ url_for('products') }}">View Products</a>
+		  <a class="dropdown-item" href="{{ url_for('import_products') }}">import Products</a>
         </div>
       </li>
       <li class="nav-item dropdown">
@@ -42,6 +43,7 @@
         <div class="dropdown-menu" aria-labelledby="navbarDropdownInvoices">
           <a class="dropdown-item" href="{{ url_for('create_invoice') }}">Create Invoice</a>
           <a class="dropdown-item" href="{{ url_for('invoices') }}">View Invoices</a>
+		  <a class="dropdown-item" href="{{ url_for('import_sales') }}">import sales</a>
         </div>
       </li>
       <li class="nav-item dropdown">
@@ -51,6 +53,7 @@
         <div class="dropdown-menu" aria-labelledby="navbarDropdownCustomers">
           <a class="dropdown-item" href="{{ url_for('add_customer') }}">Add Customer</a>
           <a class="dropdown-item" href="{{ url_for('customers') }}">View Customers</a>
+		  <a class="dropdown-item" href="{{ url_for('import_customers') }}">import customers</a>
         </div>
       </li>
       <li class="nav-item">
@@ -77,7 +80,18 @@
 </nav>
 
 <div class="container mt-4">
-    {% block content %}{% endblock %}
+    {% block content %}
+	
+	    <h1>Import Sales</h1>
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+    <form action="{{ url_for('import_sales') }}" method="post" enctype="multipart/form-data">
+        <label for="file">Choose Excel file:</label><br>
+        <input type="file" id="file" name="file"><br><br>
+        <input type="submit" value="Upload">
+    </form>
+	{% endblock %}
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

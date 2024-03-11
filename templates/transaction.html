@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="mb-4">Manage Transaction Categories</h1>
+        
+        <!-- Form for adding a new category -->
+        <form action="/create_category" method="POST" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="name" class="form-control" placeholder="Enter category name" required>
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-primary">Add Category</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Table to display existing categories -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in categories %}
+                <tr>
+                    <td>{{ category.id }}</td>
+                    <td>{{ category.name }}</td>
+                    <td>
+                        <!-- Form for deleting a category -->
+                        <form action="/delete_category/{{ category.id }}" method="POST" style="display: inline;">
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                        <!-- Link to edit a category (navigate to a separate edit page) -->
+                        <a href="/edit_category/{{ category.id }}" class="btn btn-secondary btn-sm ml-1">Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
