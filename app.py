@@ -284,6 +284,59 @@ def create_invoice():
             return render_template('create_invoice.html', customers=customers, products=products, is_logged_in=is_logged_in())
     else:
         return redirect(url_for('login'))
+@app.route('/edit_invoice/<int:invoice_id>', methods=['GET', 'POST'])
+def edit_invoice(invoice_id):
+    if is_logged_in():
+        if request.method == 'POST':
+            # Get form data
+            updated_data = {
+                'name': request.form['name'],
+                'amount': request.form['amount'],
+                'customer_id': request.form['customer_id'],
+                'date': request.form['date'],
+                'notes': request.form['notes'],
+                # Add more fields as needed
+            }
+
+            # Update the invoice in the database using updated_data
+            conn = sqlite3.connect('database.db')
+            c = conn.cursor()
+            c.execute("""
+                 UPDATE invoices
+            SET name = ?, amount = ?, customer_id = ?, date = ?, notes = ? -- Add more fields here as needed
+            WHERE id = ?
+            """, (updated_data['name'], updated_data['amount'], updated_data['customer_id'], updated_data['date'], updated_data['notes'], invoice_id))
+            conn.commit()
+            conn.close()
+
+            # Redirect to the invoices page after editing
+            return redirect(url_for('invoices'))
+
+        else:
+            # Fetch the invoice details from the database based on invoice_id
+            conn = sqlite3.connect('database.db')
+            c = conn.cursor()
+            c.execute("SELECT * FROM invoices WHERE id = ?", (invoice_id,))
+            invoice_details = c.fetchone()
+            conn.close()
+
+            # Render a template with the form to edit the invoice
+            return render_template('edit_invoice.html', invoice=invoice_details)
+    else:
+        return redirect(url_for('login'))
+@app.route('/delete_invoice/<int:invoice_id>', methods=['POST'])
+def delete_invoice(invoice_id):
+    if is_logged_in():
+        # Delete the category from the database
+        conn = sqlite3.connect('database.db')
+        c = conn.cursor()
+        c.execute("DELETE FROM invoices WHERE id=?", (invoice_id,))
+        conn.commit()
+        conn.close()
+
+        return redirect(url_for('invoices'))
+    else:
+        return redirect(url_for('login'))
 # Route for listing all customers
 @app.route('/customers')
 def customers():

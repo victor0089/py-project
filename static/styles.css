@@ -33,3 +33,23 @@ body {
 .button-primary:hover {
     background-color: #218838;
 }
+
+/* Light Mode Styles */
+body {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.navbar {
+    background-color: #343a40;
+}
+
+/* Dark Mode Styles */
+.dark-mode body {
+    background-color: #222222;
+    color: #ffffff;
+}
+
+.dark-mode .navbar {
+    background-color: #212529;
+}

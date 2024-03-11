@@ -8,12 +8,17 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+	 <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="#">Managment System</a>
+  <a class="navbar-brand" href="#">Management System</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
@@ -30,20 +35,20 @@
           <a class="dropdown-item" href="{{ url_for('products') }}">View Products</a>
         </div>
       </li>
-	        <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownProducts" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownInvoices" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Invoices
         </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdownProducts">
-          <a class="dropdown-item" href="{{ url_for('create_invoice') }}">Create invoice</a>
-          <a class="dropdown-item" href="{{ url_for('invoices') }}">View invoices</a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownInvoices">
+          <a class="dropdown-item" href="{{ url_for('create_invoice') }}">Create Invoice</a>
+          <a class="dropdown-item" href="{{ url_for('invoices') }}">View Invoices</a>
         </div>
       </li>
-	  	        <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownProducts" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownCustomers" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Customers
         </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdownProducts">
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownCustomers">
           <a class="dropdown-item" href="{{ url_for('add_customer') }}">Add Customer</a>
           <a class="dropdown-item" href="{{ url_for('customers') }}">View Customers</a>
         </div>
@@ -58,12 +63,17 @@
         <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
       </li>
     </ul>
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('export_excel') }}">Export Excel</a>
+      </li>
+    </ul>
+	 <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <button class="btn btn-outline-light" id="darkModeToggle"><i class="fas fa-moon"></i> Dark Mode</button>
+      </li>
+    </ul>
   </div>
-  <div>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('export_excel') }}">Export Excel</a>
-                </li>
-				</div>
 </nav>
 
 <div class="container mt-4">
@@ -73,6 +83,19 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    // Dark mode toggle functionality
+    document.getElementById('darkModeToggle').addEventListener('click', function() {
+        document.body.classList.toggle('dark-mode');
+        localStorage.setItem('darkModeEnabled', document.body.classList.contains('dark-mode'));
+    });
+
+    // Check local storage for dark mode preference
+    if (localStorage.getItem('darkModeEnabled') === 'true') {
+        document.body.classList.add('dark-mode');
+    }
+</script>
 
 </body>
 </html>
