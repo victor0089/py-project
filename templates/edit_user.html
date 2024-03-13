@@ -6,8 +6,8 @@
         <form action="" method="post">
             <label for="username">Username:</label><br>
             <input type="text" id="username" name="username" value="{{ user.username }}" required><br>
-            <label for="email">Email:</label><br>
-            <input type="email" id="email" name="email" value="{{ user.email }}" required><br>
+            <label for="password">password:</label><br>
+            <input type="password" id="password" name="password" value="{{ user.passwprd }}" required><br>
             <label for="role">Role:</label><br>
             <select id="role" name="role" required>
                 <option value="admin" {% if user.role == 'admin' %} selected {% endif %}>Admin</option>

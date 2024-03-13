@@ -889,6 +889,11 @@ def logout():
     return redirect(url_for('home'))
     # Define the User model
 
+@app.route('/user/<int:user_id>')
+def get_user(user_id):
+    # Assuming User is your model representing users in your database
+    user = User.query.get_or_404(user_id)
+    return render_template('user.html', user=user)
 
 # Routes for user management
 @app.route('/users')
@@ -903,10 +908,9 @@ def users():
     else:
         return render_template('unauthorized.html')
 
-@app.route('/edit_user/<int:user_id>', methods=['GET', 'POST'])
-def edit_user(user_id):
+@app.route('/edit_user/<int:user_iid>', methods=['GET', 'POST'])
+def edit_user(user_iid):
     if is_logged_in() and get_user_role() == 'admin':
-        user = User.query.get_or_404(user_id)
         if request.method == 'POST':
             # Update user data
             username = request.form['username']
@@ -921,7 +925,7 @@ def edit_user(user_id):
             conn.close()
             return redirect(url_for('users'))
         else:
-            return render_template('edit_user.html', user=user)
+            return render_template('edit_user.html', user=user_iid, is_logged_in=is_logged_in())
     else:
         return render_template('unauthorized.html')
 
