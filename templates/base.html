@@ -34,16 +34,19 @@
           <a class="dropdown-item" href="{{ url_for('create_product') }}">Create Product</a>
           <a class="dropdown-item" href="{{ url_for('products') }}">View Products</a>
 		  <a class="dropdown-item" href="{{ url_for('import_products') }}">import Products</a>
+		  <a class="dropdown-item" href="{{ url_for('categories') }}">Categories</a>
         </div>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownInvoices" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Invoices
+          Sales
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdownInvoices">
           <a class="dropdown-item" href="{{ url_for('create_invoice') }}">Create Invoice</a>
           <a class="dropdown-item" href="{{ url_for('invoices') }}">View Invoices</a>
+		  <a class="dropdown-item" href="{{ url_for('sales_and_payments') }}">Sales & Payments</a>
 		  <a class="dropdown-item" href="{{ url_for('import_sales') }}">import sales</a>
+		  <a class="dropdown-item" href="{{ url_for('sales_by_date') }}">sales Report</a>
         </div>
       </li>
       <li class="nav-item dropdown">
@@ -56,11 +59,15 @@
 		  <a class="dropdown-item" href="{{ url_for('import_customers') }}">import customers</a>
         </div>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('sales_and_payments') }}">Sales & Payments</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('categories') }}">Categories</a>
+
+	  <li class="nav-item dropdown">
+       <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Inventory
+    </a>
+    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+    <a class="dropdown-item" href="{{ url_for('inventory') }}">View inventory</a>
+    <a class="dropdown-item" href="{{ url_for('create_purchase_invoice') }}">create purchase invoice</a>
+    </div>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
@@ -82,6 +89,15 @@
     </ul>
 
   </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-text">Logged-in user: {{ username }}</p>
+                    <p class="card-text">Role: {{ role }}</p>
+                    <!-- Rest of the content here -->
+                </div>
+            </div>
+
 </nav>
 
 <div class="container mt-4">

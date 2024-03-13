@@ -23,16 +23,19 @@ c.execute('''CREATE TABLE IF NOT EXISTS users
 c.execute('''CREATE TABLE IF NOT EXISTS products 
 (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, category TEXT, barcode TEXT, description TEXT, vendor TEXT, manufacturer TEXT, price REAL, discount REAL, tax REAL, image_url TEXT)''')
 c.execute('''CREATE TABLE IF NOT EXISTS sales 
-(id INTEGER PRIMARY KEY AUTOINCREMENT, product_id INTEGER quantity INTEGER, date TEXT)''')
+(id INTEGER PRIMARY KEY AUTOINCREMENT, invoice_number TEXT, product_id INTEGER, quantity INTEGER, date TEXT, FOREIGN KEY (product_id) REFERENCES products (id))''')
 c.execute('''CREATE TABLE IF NOT EXISTS categories 
 (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)''')
 c.execute('''CREATE TABLE IF NOT EXISTS payments 
-(id INTEGER PRIMARY KEY AUTOINCREMENT, sales_id INTEGER, amount REAL, date TEXT)''')
+(id INTEGER PRIMARY KEY AUTOINCREMENT, sales_id INTEGER, amount REAL, date TEXT, FOREIGN KEY (sales_id) REFERENCES sales (id))''')
 c.execute('''CREATE TABLE IF NOT EXISTS customers 
 (id INTEGER PRIMARY KEY, name TEXT NOT NULL, email TEXT, phone TEXT, segment TEXT, location TEXT, gender TEXT, contact_person TEXT)''')
 c.execute('''CREATE TABLE IF NOT EXISTS invoices 
-(id INTEGER PRIMARY KEY, customer_id INTEGER, product_id INTEGER, quantity INTEGER, date TEXT, type TEXT, FOREIGN KEY (customer_id) REFERENCES customers (id), FOREIGN KEY (product_id) REFERENCES products (id))''')
-
+(id INTEGER PRIMARY KEY, customer_id INTEGER, invoice_number TEXT UNIQUE, date TEXT, type TEXT, FOREIGN KEY (customer_id) REFERENCES customers (id))''')
+c.execute('''CREATE TABLE IF NOT EXISTS invoice_items 
+(id INTEGER PRIMARY KEY AUTOINCREMENT, invoice_id INTEGER, product_id INTEGER, quantity INTEGER, FOREIGN KEY (invoice_id) REFERENCES invoices (id), FOREIGN KEY (product_id) REFERENCES products (id))''')
+c.execute('''CREATE TABLE IF NOT EXISTS inventory 
+(id INTEGER PRIMARY KEY AUTOINCREMENT, product_id INTEGER, quantity INTEGER, FOREIGN KEY (product_id) REFERENCES products (id))''')
 
 
 conn.commit()
@@ -127,6 +130,39 @@ def import_sales():
             return render_template('import_sales.html', is_logged_in=is_logged_in())
         else:
             # Redirect to a page indicating unauthorized access
+            return render_template('unauthorized.html')
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/sales_by_date', methods=['GET', 'POST'])
+def sales_by_date():
+    if is_logged_in():
+        user_role = get_user_role()
+        if user_role in ['admin', 'manager']:
+            if request.method == 'POST':
+                start_date_str = request.form['start_date']
+                end_date_str = request.form['end_date']
+                
+                try:
+                    start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+                    end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
+                    
+                    conn = sqlite3.connect('database.db')
+                    c = conn.cursor()
+                    c.execute("""
+                        SELECT * FROM sales
+                        WHERE date BETWEEN ? AND ?
+                    """, (start_date, end_date))
+                    sales_data = c.fetchall()
+                    conn.close()
+                    
+                    return render_template('sales_by_date.html', sales_data=sales_data)
+                
+                except Exception as e:
+                    return render_template('error.html', error=str(e))
+            
+            return render_template('sales_by_date.html', is_logged_in=is_logged_in())
+        else:
             return render_template('unauthorized.html')
     else:
         return redirect(url_for('login'))
@@ -455,23 +491,27 @@ def create_invoice():
                 customer_id = request.form['customer_id']
                 product_ids = request.form.getlist('product_id[]')
                 quantities = request.form.getlist('quantity[]')
-                prices = request.form.getlist('price[]')
-                discounts = request.form.getlist('discount[]')
-                totals = request.form.getlist('total[]')
-                notes = request.form['notes']
-                
+
                 # Insert the invoice data into the database
                 conn = sqlite3.connect('database.db')
+                c = conn.cursor()
+                c.execute("""
+                    INSERT INTO invoices (customer_id, date)
+                    VALUES (?, datetime('now'))
+                """, (customer_id,))
+                invoice_id = c.lastrowid
+
+                # Insert invoice items into the database
                 for i in range(len(product_ids)):
-                    conn.execute("""
-                        INSERT INTO invoices (customer_id, product_id, quantity, price, discount, total, notes, date)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
-                    """, (customer_id, product_ids[i], quantities[i], prices[i], discounts[i], totals[i], notes))
+                    c.execute("""
+                        INSERT INTO invoice_items (invoice_id, product_id, quantity)
+                        VALUES (?, ?, ?)
+                    """, (invoice_id, product_ids[i], quantities[i]))
                 conn.commit()
                 conn.close()
-                
-                # Redirect to the home page after creating the invoice
-                return redirect(url_for('home'))
+
+                # Redirect to the invoices page after creating the invoice
+                return redirect(url_for('invoices'))
             else:
                 # If GET request, render the create invoice form
                 conn = sqlite3.connect('database.db')
@@ -546,6 +586,70 @@ def delete_invoice(invoice_id):
             conn.close()
 
             return redirect(url_for('invoices'))
+        else:
+            # Redirect to a page indicating unauthorized access
+            return render_template('unauthorized.html') 
+    else:
+        return redirect(url_for('login'))
+@app.route('/inventory')
+def inventory():
+    if is_logged_in():
+        user_role = get_user_role()
+        if user_role in ['admin', 'manager']:
+            conn = sqlite3.connect('database.db')
+            c = conn.cursor()
+            c.execute("SELECT name, quantity FROM inventory JOIN products ON inventory.product_id = products.id")
+            inventory = c.fetchall()
+            conn.close()
+            return render_template('inventory.html', inventory=inventory, is_logged_in=is_logged_in())
+        else:
+            return render_template('unauthorized.html') 
+    else:
+        return redirect(url_for('login'))
+@app.route('/create_purchase_invoice', methods=['GET', 'POST'])
+def create_purchase_invoice():
+    if is_logged_in():
+        user_role = get_user_role()
+        if user_role in ['admin', 'manager']:
+            if request.method == 'POST':
+                vendor = request.form['vendor']
+                product_ids = request.form.getlist('product_id[]')
+                quantities = request.form.getlist('quantity[]')
+
+                # Insert the purchase invoice data into the database
+                conn = sqlite3.connect('database.db')
+                c = conn.cursor()
+                c.execute("""
+                    INSERT INTO invoices (vendor, date)
+                    VALUES (?, datetime('now'))
+                """, (vendor,))
+                invoice_id = c.lastrowid
+
+                # Update inventory with purchased products
+                for i in range(len(product_ids)):
+                    product_id = product_ids[i]
+                    quantity = int(quantities[i])
+
+                    # Update inventory
+                    c.execute("""
+                        UPDATE inventory
+                        SET quantity = quantity + ?
+                        WHERE product_id = ?
+                    """, (quantity, product_id))
+
+                conn.commit()
+                conn.close()
+
+                # Redirect to the inventory page after creating the invoice
+                return redirect(url_for('inventory'))
+            else:
+                # If GET request, render the create purchase invoice form
+                conn = sqlite3.connect('database.db')
+                c = conn.cursor()
+                c.execute("SELECT * FROM products")
+                products = c.fetchall()
+                conn.close()
+                return render_template('create_purchase_invoice.html', products=products, is_logged_in=is_logged_in())
         else:
             # Redirect to a page indicating unauthorized access
             return render_template('unauthorized.html') 

@@ -122,3 +122,11 @@ tr:nth-child(even) {
 .btn-primary:hover {
     background-color: #0056b3; /* Darker blue on hover */
 }
+.list-group-item {
+	    background-color: #282c34;  /* Dark blue background */
+    color: #ffffff; /* White text */
+}
+.form-control {
+		    background-color: #282c34;  /* Dark blue background */
+    color: #ffffff; /* White text */
+}

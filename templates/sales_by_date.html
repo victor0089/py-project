@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+   <h1>Sales by Date</h1>
+    
+    <form method="POST" action="/sales_by_date">
+        <label for="start_date">Start Date:</label>
+        <input type="date" id="start_date" name="start_date">
+        <label for="end_date">End Date:</label>
+        <input type="date" id="end_date" name="end_date">
+        <button type="submit">Submit</button>
+    </form>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Invoice Number</th>
+                <th>Product ID</th>
+                <th>Quantity</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sale in sales_data %}
+            <tr>
+                <td>{{ sale[1] }}</td>
+                <td>{{ sale[2] }}</td>
+                <td>{{ sale[3] }}</td>
+                <td>{{ sale[4] }}</td>
+            </tr>
+            {% endfor %}
+{% endblock %}
