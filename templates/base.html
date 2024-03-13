@@ -65,32 +65,50 @@
       <li class="nav-item">
         <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
       </li>
+	  	 <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownProducts" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    users
+    </a>
+    <div class="dropdown-menu" aria-labelledby="navbarDropdownCustomers">
+    <a class="dropdown-item" href="{{ url_for('users') }}">View Users</a>
+    <a class="dropdown-item" href="{{ url_for('register') }}">Register New User</a>
+    </div>
+     </li>
     </ul>
     <ul class="navbar-nav ml-auto">
       <li class="nav-item">
         <a class="nav-link" href="{{ url_for('export_excel') }}">Export Excel</a>
       </li>
     </ul>
-	 <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <button class="btn btn-outline-light" id="darkModeToggle"><i class="fas fa-moon"></i> Dark Mode</button>
-      </li>
-    </ul>
+
   </div>
 </nav>
 
 <div class="container mt-4">
     {% block content %}
-	
-	    <h1>Import Sales</h1>
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
-    <form action="{{ url_for('import_sales') }}" method="post" enctype="multipart/form-data">
-        <label for="file">Choose Excel file:</label><br>
-        <input type="file" id="file" name="file"><br><br>
-        <input type="submit" value="Upload">
-    </form>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Welcome to the Sales Management System</h2>
+                <p class="card-text">Our Sales Management System is designed to streamline your business operations, increase efficiency, and maximize profitability. With our system, you can:</p>
+                <ul>
+                    <li>Effortlessly manage your product inventory.</li>
+                    <li>Create and track invoices with ease.</li>
+                    <li>Monitor sales performance and trends.</li>
+                    <li>Keep detailed records of customer interactions.</li>
+                    <li>Generate comprehensive reports for analysis.</li>
+                </ul>
+                <p class="card-text">Whether you're a small business owner or a large enterprise, our Sales Management System provides the tools you need to succeed. Sign up today and take control of your sales process!</p>
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 	{% endblock %}
 </div>
 

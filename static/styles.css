@@ -1,55 +1,124 @@
 /* styles.css */
+/* Global styles */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
     margin: 0;
     padding: 0;
+    background-color: #202124;
+    color: #fff;
 }
 
 .container {
-    max-width: 600px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: none;
+    margin: 50px auto;
     padding: 20px;
+    background-color: #303136;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
 }
 
-.button {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #007bff;
+h1, label {
     color: #fff;
-    text-decoration: none;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="submit"] {
+    background-color: #424242;
+    color: #fff;
     border: none;
-    border-radius: 4px;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    width: 100%;
 }
 
-.button:hover {
-    background-color: #0056b3;
+input[type="submit"] {
+    background-color: #4caf50;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-.button-primary {
-    background-color: #28a745;
+input[type="submit"]:hover {
+    background-color: #45a049;
 }
 
-.button-primary:hover {
-    background-color: #218838;
+a {
+    color: #4caf50;
+    text-decoration: none;
 }
 
-/* Light Mode Styles */
-body {
-    background-color: #ffffff;
-    color: #000000;
+a:hover {
+    text-decoration: underline;
 }
 
-.navbar {
-    background-color: #343a40;
+/* Dark table styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
 }
 
-/* Dark Mode Styles */
-.dark-mode body {
-    background-color: #222222;
-    color: #ffffff;
+th, td {
+    border: 1px solid #424242;
+    padding: 8px;
+    text-align: left;
 }
 
-.dark-mode .navbar {
-    background-color: #212529;
+th {
+    background-color: #303136;
+    color: #fff;
+}
+
+tr:nth-child(even) {
+    background-color: #424242;
+}
+/* Dark table styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    color: #fff; /* Set text color for table content */
+}
+
+th, td {
+    border: 1px solid #424242;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #303136;
+    color: #fff; /* Set text color for table headers */
+}
+
+td {
+    background-color: #424242; /* Set background color for table cells */
+	 color: #fff; /* Set text color for table content */
+}
+
+tr:nth-child(even) {
+    background-color: #424242;
+}
+.card {
+    background-color: #282c34; /* Dark blue background */
+    color: #ffffff; /* White text */
+}
+
+.card-title {
+    color: #ffffff; /* White title text */
+}
+
+.card-text {
+    color: #cccccc; /* Light gray text */
+}
+
+.btn-primary {
+    background-color: #007bff; /* Blue button */
+    color: #ffffff; /* White text */
+}
+
+.btn-primary:hover {
+    background-color: #0056b3; /* Darker blue on hover */
 }

@@ -6,7 +6,56 @@
     <title>Login</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='admin.css') }}" rel="stylesheet">
+	    <style>
+        body {
+            background-color: #202124;
+            color: #fff;
+        }
+        .container {
+            background-color: #303136;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 50px;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+        }
+        h1 {
+            color: #fff;
+        }
+        label {
+            color: #fff;
+        }
+        input[type="text"],
+        input[type="password"] {
+            background-color: #424242;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+        input[type="submit"] {
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        a {
+            color: #4caf50;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -29,4 +78,5 @@
         // jQuery code can go here
     </script>
 </body>
+</html>
 </html>
